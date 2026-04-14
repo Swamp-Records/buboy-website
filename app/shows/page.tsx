@@ -1,7 +1,10 @@
-export default function Shows () {
-    return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-            This is the Shows Page! 
-        </div>
-    )
+export default function Shows() {
+  return (
+    <div className="p-10">
+      <h1 className="text-4xl font-bold">Shows</h1>
+      <p className="mt-4">
+        Upcoming tour dates will go here.
+      </p>
+    </div>
+  );
 }
