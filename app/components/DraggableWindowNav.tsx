@@ -4,24 +4,37 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 const navItems = [
-  { href: "/gallery", label: "gallery" },
-  { href: "/shop", label: "shop" },
-  { href: "/pressKit", label: "press kit" },
-  { href: "/video", label: "video" },
-  { href: "/tickets", label: "tickets" },
-  { href: "/blog", label: "blog!" },
+  { id: "gallery", label: "gallery" },
+  { id: "shop", label: "shop" },
+  { id: "press-kit", label: "press kit" },
+  { id: "video", label: "video" },
+  { id: "tickets", label: "tickets" },
+  { id: "blog", label: "blog!" },
+];
+
+const galleryImages = [
+  "/gallery/01.png",
+  "/gallery/02.png",
+  "/gallery/03.png",
+  "/gallery/04.jpg",
+  "/gallery/05.png",
+  "/gallery/06.png",
+  "/gallery/07.png",
+  "/gallery/08.png",
 ];
 
 export default function DraggableWindowNav() {
   const dockRef = useRef<HTMLDivElement | null>(null);
-  const galleryRef = useRef<HTMLDivElement | null>(null);
+  const windowRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const dragRef = useRef({ isDragging: false, offsetX: 0, offsetY: 0 });
-  const galleryDragRef = useRef({ isDragging: false, offsetX: 0, offsetY: 0 });
+  const windowDragRef = useRef({ id: "", offsetX: 0, offsetY: 0 });
   const [position, setPosition] = useState({ x: 24, y: 24 });
   const [dragging, setDragging] = useState(false);
-  const [galleryPosition, setGalleryPosition] = useState({ x: 120, y: 120 });
-  const [galleryDragging, setGalleryDragging] = useState(false);
-  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [openWindows, setOpenWindows] = useState<string[]>([]);
+  const [windowPositions, setWindowPositions] = useState<
+    Record<string, { x: number; y: number }>
+  >({});
+  const [draggingWindowId, setDraggingWindowId] = useState<string | null>(null);
 
   const stopDockDrag = () => {
     dragRef.current.isDragging = false;
@@ -30,11 +43,11 @@ export default function DraggableWindowNav() {
     window.removeEventListener("pointerup", handleDockWindowUp);
   };
 
-  const stopGalleryDrag = () => {
-    galleryDragRef.current.isDragging = false;
-    setGalleryDragging(false);
-    window.removeEventListener("pointermove", handleGalleryWindowMove);
-    window.removeEventListener("pointerup", handleGalleryWindowUp);
+  const stopWindowDrag = () => {
+    setDraggingWindowId(null);
+    windowDragRef.current.id = "";
+    window.removeEventListener("pointermove", handleWindowMove);
+    window.removeEventListener("pointerup", handleWindowUp);
   };
 
   const handleDockWindowMove = (event: PointerEvent) => {
@@ -55,22 +68,29 @@ export default function DraggableWindowNav() {
     stopDockDrag();
   };
 
-  const handleGalleryWindowMove = (event: PointerEvent) => {
-    if (!galleryDragRef.current.isDragging) {
+  const handleWindowMove = (event: PointerEvent) => {
+    if (!windowDragRef.current.id) {
       return;
     }
 
-    const nextX = event.clientX - galleryDragRef.current.offsetX;
-    const nextY = event.clientY - galleryDragRef.current.offsetY;
-    setGalleryPosition(clampGalleryToViewport(nextX, nextY));
+    const nextX = event.clientX - windowDragRef.current.offsetX;
+    const nextY = event.clientY - windowDragRef.current.offsetY;
+    setWindowPositions((current) => ({
+      ...current,
+      [windowDragRef.current.id]: clampWindowToViewport(
+        windowDragRef.current.id,
+        nextX,
+        nextY
+      ),
+    }));
   };
 
-  const handleGalleryWindowUp = () => {
-    if (!galleryDragRef.current.isDragging) {
+  const handleWindowUp = () => {
+    if (!windowDragRef.current.id) {
       return;
     }
 
-    stopGalleryDrag();
+    stopWindowDrag();
   };
 
   const clampToViewport = (x: number, y: number) => {
@@ -90,14 +110,14 @@ export default function DraggableWindowNav() {
     };
   };
 
-  const clampGalleryToViewport = (x: number, y: number) => {
-    const galleryEl = galleryRef.current;
-    if (!galleryEl) {
+  const clampWindowToViewport = (id: string, x: number, y: number) => {
+    const windowEl = windowRefs.current[id];
+    if (!windowEl) {
       return { x, y };
     }
 
-    const width = galleryEl.offsetWidth;
-    const height = galleryEl.offsetHeight;
+    const width = windowEl.offsetWidth;
+    const height = windowEl.offsetHeight;
     const maxX = Math.max(8, window.innerWidth - width - 8);
     const maxY = Math.max(8, window.innerHeight - height - 8);
 
@@ -116,7 +136,7 @@ export default function DraggableWindowNav() {
     const width = dockEl.offsetWidth;
     const height = dockEl.offsetHeight;
     const centeredX = (window.innerWidth - width) / 2;
-    const bottomY = window.innerHeight - height - 16;
+    const bottomY = window.innerHeight - height - 50;
     setPosition(clampToViewport(centeredX, bottomY));
 
     const handleResize = () => {
@@ -141,7 +161,7 @@ export default function DraggableWindowNav() {
       const width = dockEl.offsetWidth;
       const height = dockEl.offsetHeight;
       const centeredX = (window.innerWidth - width) / 2;
-      const bottomY = window.innerHeight - height - 16;
+      const bottomY = window.innerHeight - height - 40;
       setPosition(clampToViewport(centeredX, bottomY));
     });
 
@@ -150,19 +170,28 @@ export default function DraggableWindowNav() {
   }, []);
 
   useEffect(() => {
-    if (!galleryOpen) {
+    if (!openWindows.length) {
       return;
     }
 
-    const galleryEl = galleryRef.current;
-    if (!galleryEl) {
-      return;
-    }
+    setWindowPositions((current) => {
+      let next = current;
 
-    const width = galleryEl.offsetWidth;
-    const centeredX = (window.innerWidth - width) / 2;
-    setGalleryPosition(clampGalleryToViewport(centeredX, 120));
-  }, [galleryOpen]);
+      openWindows.forEach((id) => {
+        if (current[id]) {
+          return;
+        }
+
+        const windowEl = windowRefs.current[id];
+        const width = windowEl?.offsetWidth ?? 900;
+        const centeredX = (window.innerWidth - width) / 2;
+        const position = clampWindowToViewport(id, centeredX, 120);
+        next = { ...next, [id]: position };
+      });
+
+      return next;
+    });
+  }, [openWindows]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) {
@@ -202,7 +231,8 @@ export default function DraggableWindowNav() {
     window.removeEventListener("pointerup", handleDockWindowUp);
   };
 
-  const handleGalleryPointerDown = (
+  const handleWindowPointerDown = (
+    id: string,
     event: React.PointerEvent<HTMLDivElement>
   ) => {
     if (event.button !== 0) {
@@ -211,39 +241,38 @@ export default function DraggableWindowNav() {
 
     event.preventDefault();
     event.stopPropagation();
-    galleryDragRef.current.isDragging = true;
-    galleryDragRef.current.offsetX = event.clientX - galleryPosition.x;
-    galleryDragRef.current.offsetY = event.clientY - galleryPosition.y;
-    setGalleryDragging(true);
+    const position = windowPositions[id] ?? { x: 0, y: 0 };
+    windowDragRef.current.id = id;
+    windowDragRef.current.offsetX = event.clientX - position.x;
+    windowDragRef.current.offsetY = event.clientY - position.y;
+    setDraggingWindowId(id);
     event.currentTarget.setPointerCapture(event.pointerId);
-    window.addEventListener("pointermove", handleGalleryWindowMove);
-    window.addEventListener("pointerup", handleGalleryWindowUp);
+    window.addEventListener("pointermove", handleWindowMove);
+    window.addEventListener("pointerup", handleWindowUp);
   };
 
-  const handleGalleryPointerMove = (
-    event: React.PointerEvent<HTMLDivElement>
-  ) => {
-    if (!galleryDragRef.current.isDragging) {
+  const handleWindowPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!windowDragRef.current.id) {
       return;
     }
 
     event.preventDefault();
-    const nextX = event.clientX - galleryDragRef.current.offsetX;
-    const nextY = event.clientY - galleryDragRef.current.offsetY;
-    setGalleryPosition(clampGalleryToViewport(nextX, nextY));
-  };
-
-  const handleGalleryPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!galleryDragRef.current.isDragging) {
-      return;
-    }
-
-    event.preventDefault();
-    galleryDragRef.current.isDragging = false;
-    setGalleryDragging(false);
+    stopWindowDrag();
     event.currentTarget.releasePointerCapture(event.pointerId);
-    window.removeEventListener("pointermove", handleGalleryWindowMove);
-    window.removeEventListener("pointerup", handleGalleryWindowUp);
+  };
+
+  const openWindow = (id: string) => {
+    setOpenWindows((current) =>
+      current.includes(id) ? current : [...current, id]
+    );
+  };
+
+  const closeWindow = (id: string) => {
+    setOpenWindows((current) => current.filter((entry) => entry !== id));
+    setWindowPositions((current) => {
+      const { [id]: _, ...rest } = current;
+      return rest;
+    });
   };
 
   return (
@@ -268,42 +297,40 @@ export default function DraggableWindowNav() {
         </div>
         <div className="window-content">
           <nav className="nav-grid" aria-label="Primary">
-            {navItems.map((item) =>
-              item.href === "/gallery" ? (
-                <button
-                  key={item.href}
-                  type="button"
-                  className="nav-item nav-button"
-                  onClick={() => setGalleryOpen(true)}
-                >
-                  <span className="folder-icon" aria-hidden="true" />
-                  <span className="nav-label">{item.label}</span>
-                </button>
-              ) : (
-                <Link key={item.href} href={item.href} className="nav-item">
-                  <span className="folder-icon" aria-hidden="true" />
-                  <span className="nav-label">{item.label}</span>
-                </Link>
-              )
-            )}
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className="nav-item nav-button"
+                onClick={() => openWindow(item.id)}
+              >
+                <span className="folder-icon" aria-hidden="true" />
+                <span className="nav-label">{item.label}</span>
+              </button>
+            ))}
           </nav>
         </div>
       </div>
-      {galleryOpen ? (
+      {openWindows.map((id) => (
         <div
-          ref={galleryRef}
-          className={`desktop-window gallery-window${
-            galleryDragging ? " is-dragging" : ""
+          key={id}
+          ref={(node) => {
+            windowRefs.current[id] = node;
+          }}
+          className={`desktop-window app-window${
+            draggingWindowId === id ? " is-dragging" : ""
           }`}
-          style={{ left: galleryPosition.x, top: galleryPosition.y }}
+          style={{
+            left: windowPositions[id]?.x ?? 120,
+            top: windowPositions[id]?.y ?? 120,
+          }}
         >
           <div
             className="desktop-titlebar"
-            onPointerDown={handleGalleryPointerDown}
-            onPointerMove={handleGalleryPointerMove}
-            onPointerUp={handleGalleryPointerUp}
-            onPointerCancel={handleGalleryPointerUp}
-            aria-label="Drag gallery window"
+            onPointerDown={(event) => handleWindowPointerDown(id, event)}
+            onPointerUp={handleWindowPointerUp}
+            onPointerCancel={handleWindowPointerUp}
+            aria-label={`Drag ${id} window`}
           >
             <div className="window-controls" aria-hidden="true">
               <span className="control control-min">-</span>
@@ -314,15 +341,31 @@ export default function DraggableWindowNav() {
               className="window-close"
               onPointerDown={(event) => event.stopPropagation()}
               onPointerUp={(event) => event.stopPropagation()}
-              onClick={() => setGalleryOpen(false)}
-              aria-label="Close gallery window"
+              onClick={() => closeWindow(id)}
+              aria-label={`Close ${id} window`}
             >
               x
             </button>
           </div>
-          <div className="window-content gallery-content" />
+          <div className="window-title-row">[ {id} ]</div>
+          <div className="window-content app-window-content">
+            {id === "gallery" ? (
+              <div className="gallery-grid">
+                {galleryImages.map((src, index) => (
+                  <div key={src} className="gallery-tile">
+                    <img
+                      src={src}
+                      alt={`Gallery photo ${index + 1}`}
+                      className="gallery-image"
+                    />
+                    <div className="gallery-caption">photo by: photo taker</div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
         </div>
-      ) : null}
+      ))}
     </div>
   );
 }
