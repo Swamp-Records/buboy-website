@@ -14,13 +14,152 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #F4F1D0;
     --foreground: #ededed;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: url("/buboylogo.png"), url("/star.png"), url("/star.png"), url("/star.png");
+  background-repeat: no-repeat;
+  background-position: 50% -40px, 10% 50%, 50% 50%, 90% 50%;
+  background-size: 280px 161px, 700px auto, 700px auto, 700px auto;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  position: relative;
+}
+
+body::after {
+  content: "Buboy is a Filipino-American indie rock artist who drinks a lot of milk and goes to the movie theater alone (separate activities, rarely together).";
+  position: fixed;
+  right: 6%;
+  top: 80%;
+  max-width: 320px;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #111111;
+  z-index: 1;
+  pointer-events: none;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.desktop-dock {
+  position: fixed;
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  z-index: 2;
+  user-select: none;
+}
+
+.desktop-window {
+  width: min(920px, 92vw);
+  border: 2px solid #5a5a5a;
+  border-radius: 8px;
+  background: #f7f7f2;
+  box-shadow: 0 18px 30px rgba(34, 34, 34, 0.25);
+}
+
+.desktop-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 2px solid #5a5a5a;
+  background: linear-gradient(180deg, #fefefe 0%, #e6e6e1 100%);
+  cursor: grab;
+}
+
+.desktop-dock.is-dragging .desktop-titlebar {
+  cursor: grabbing;
+}
+
+.window-controls {
+  display: flex;
+  gap: 12px;
+  font-size: 22px;
+  color: #1d1d1d;
+}
+
+.window-controls .control {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #1d1d1d;
+  border-radius: 4px;
+  background: #fafaf4;
+  line-height: 1;
+}
+
+.title-text {
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #1f1f1f;
+}
+
+.window-content {
+  padding: 26px 32px 32px;
+  background: #fdfdf7;
+}
+
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px 8px;
+  text-align: center;
+}
+
+.nav-item {
+  display: grid;
+  justify-items: center;
+  gap: 0px;
+  color: #141414;
+  text-decoration: none;
+  font-size: 22px;
+  line-height: 1.1;
+  text-transform: lowercase;
+}
+
+.nav-item:focus-visible {
+  outline: 2px solid #1d1d1d;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.folder-icon {
+  width: 130px;
+  height: 104px;
+  background-image: url("/minifile.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+@media (max-width: 900px) {
+  .nav-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .desktop-window {
+    width: min(520px, 92vw);
+  }
+
+  .title-text {
+    font-size: 14px;
+    letter-spacing: 0.08em;
+  }
+
+  .nav-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
