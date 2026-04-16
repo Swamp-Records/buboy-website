@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 
 const navItems = [
   { id: "gallery", label: "gallery" },
@@ -21,6 +20,14 @@ const galleryImages = [
   "/gallery/06.png",
   "/gallery/07.png",
   "/gallery/08.png",
+];
+
+const videoItems = [
+  { id: "pGNpv_9DWAE", title: "Buboy - Chew (Official Lyric Video)" },
+  { id: "qM9MkEQw8xc", title: "Buboy - Movie Star (Official Music Video)" },
+  { id: "HjW16Yq34is", title: "Buboy - Too Late (Official Music Video)" },
+  { id: "WU9xOrcP_Vw", title: "Buboy - Wasted Fridays (Official Music Video)" },
+  { id: "M_zxEUAUHgQ", title: "Buboy - Cherry Tree (Official Video)" },
 ];
 
 export default function DraggableWindowNav() {
@@ -50,13 +57,26 @@ export default function DraggableWindowNav() {
     window.removeEventListener("pointerup", handleWindowUp);
   };
 
+  const getScale = () => {
+    if (typeof window === "undefined") {
+      return 1;
+    }
+
+    const value = getComputedStyle(document.documentElement)
+      .getPropertyValue("--site-scale")
+      .trim();
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+  };
+
   const handleDockWindowMove = (event: PointerEvent) => {
     if (!dragRef.current.isDragging) {
       return;
     }
 
-    const nextX = event.clientX - dragRef.current.offsetX;
-    const nextY = event.clientY - dragRef.current.offsetY;
+    const scale = getScale();
+    const nextX = event.clientX / scale - dragRef.current.offsetX;
+    const nextY = event.clientY / scale - dragRef.current.offsetY;
     setPosition(clampToViewport(nextX, nextY));
   };
 
@@ -73,8 +93,9 @@ export default function DraggableWindowNav() {
       return;
     }
 
-    const nextX = event.clientX - windowDragRef.current.offsetX;
-    const nextY = event.clientY - windowDragRef.current.offsetY;
+    const scale = getScale();
+    const nextX = event.clientX / scale - windowDragRef.current.offsetX;
+    const nextY = event.clientY / scale - windowDragRef.current.offsetY;
     setWindowPositions((current) => ({
       ...current,
       [windowDragRef.current.id]: clampWindowToViewport(
@@ -101,8 +122,11 @@ export default function DraggableWindowNav() {
 
     const width = dockEl.offsetWidth;
     const height = dockEl.offsetHeight;
-    const maxX = Math.max(8, window.innerWidth - width - 8);
-    const maxY = Math.max(8, window.innerHeight - height - 8);
+    const scale = getScale();
+    const viewportWidth = window.innerWidth / scale;
+    const viewportHeight = window.innerHeight / scale;
+    const maxX = Math.max(8, viewportWidth - width - 8);
+    const maxY = Math.max(8, viewportHeight - height - 8);
 
     return {
       x: Math.min(Math.max(8, x), maxX),
@@ -118,8 +142,11 @@ export default function DraggableWindowNav() {
 
     const width = windowEl.offsetWidth;
     const height = windowEl.offsetHeight;
-    const maxX = Math.max(8, window.innerWidth - width - 8);
-    const maxY = Math.max(8, window.innerHeight - height - 8);
+    const scale = getScale();
+    const viewportWidth = window.innerWidth / scale;
+    const viewportHeight = window.innerHeight / scale;
+    const maxX = Math.max(8, viewportWidth - width - 8);
+    const maxY = Math.max(8, viewportHeight - height - 8);
 
     return {
       x: Math.min(Math.max(8, x), maxX),
@@ -135,8 +162,11 @@ export default function DraggableWindowNav() {
 
     const width = dockEl.offsetWidth;
     const height = dockEl.offsetHeight;
-    const centeredX = (window.innerWidth - width) / 2;
-    const bottomY = window.innerHeight - height - 50;
+    const scale = getScale();
+    const viewportWidth = window.innerWidth / scale;
+    const viewportHeight = window.innerHeight / scale;
+    const centeredX = (viewportWidth - width) / 2;
+    const bottomY = viewportHeight - height - 90;
     setPosition(clampToViewport(centeredX, bottomY));
 
     const handleResize = () => {
@@ -160,8 +190,11 @@ export default function DraggableWindowNav() {
 
       const width = dockEl.offsetWidth;
       const height = dockEl.offsetHeight;
-      const centeredX = (window.innerWidth - width) / 2;
-      const bottomY = window.innerHeight - height - 40;
+      const scale = getScale();
+      const viewportWidth = window.innerWidth / scale;
+      const viewportHeight = window.innerHeight / scale;
+      const centeredX = (viewportWidth - width) / 2;
+      const bottomY = viewportHeight - height - 70;
       setPosition(clampToViewport(centeredX, bottomY));
     });
 
@@ -184,7 +217,9 @@ export default function DraggableWindowNav() {
 
         const windowEl = windowRefs.current[id];
         const width = windowEl?.offsetWidth ?? 900;
-        const centeredX = (window.innerWidth - width) / 2;
+        const scale = getScale();
+        const viewportWidth = window.innerWidth / scale;
+        const centeredX = (viewportWidth - width) / 2;
         const position = clampWindowToViewport(id, centeredX, 120);
         next = { ...next, [id]: position };
       });
@@ -199,9 +234,10 @@ export default function DraggableWindowNav() {
     }
 
     event.preventDefault();
+    const scale = getScale();
     dragRef.current.isDragging = true;
-    dragRef.current.offsetX = event.clientX - position.x;
-    dragRef.current.offsetY = event.clientY - position.y;
+    dragRef.current.offsetX = event.clientX / scale - position.x;
+    dragRef.current.offsetY = event.clientY / scale - position.y;
     setDragging(true);
     event.currentTarget.setPointerCapture(event.pointerId);
     window.addEventListener("pointermove", handleDockWindowMove);
@@ -213,8 +249,9 @@ export default function DraggableWindowNav() {
       return;
     }
 
-    const nextX = event.clientX - dragRef.current.offsetX;
-    const nextY = event.clientY - dragRef.current.offsetY;
+    const scale = getScale();
+    const nextX = event.clientX / scale - dragRef.current.offsetX;
+    const nextY = event.clientY / scale - dragRef.current.offsetY;
     setPosition(clampToViewport(nextX, nextY));
   };
 
@@ -242,9 +279,10 @@ export default function DraggableWindowNav() {
     event.preventDefault();
     event.stopPropagation();
     const position = windowPositions[id] ?? { x: 0, y: 0 };
+    const scale = getScale();
     windowDragRef.current.id = id;
-    windowDragRef.current.offsetX = event.clientX - position.x;
-    windowDragRef.current.offsetY = event.clientY - position.y;
+    windowDragRef.current.offsetX = event.clientX / scale - position.x;
+    windowDragRef.current.offsetY = event.clientY / scale - position.y;
     setDraggingWindowId(id);
     event.currentTarget.setPointerCapture(event.pointerId);
     window.addEventListener("pointermove", handleWindowMove);
@@ -348,7 +386,11 @@ export default function DraggableWindowNav() {
             </button>
           </div>
           <div className="window-title-row">[ {id} ]</div>
-          <div className="window-content app-window-content">
+          <div
+            className={`window-content app-window-content${
+              id === "video" ? " video-window-content" : ""
+            }`}
+          >
             {id === "gallery" ? (
               <div className="gallery-grid">
                 {galleryImages.map((src, index) => (
@@ -360,6 +402,30 @@ export default function DraggableWindowNav() {
                     />
                     <div className="gallery-caption">photo by: photo taker</div>
                   </div>
+                ))}
+              </div>
+            ) : null}
+            {id === "video" ? (
+              <div className="video-grid" aria-label="Video gallery">
+                {videoItems.map((video) => (
+                  <a
+                    key={video.id}
+                    className="video-card"
+                    href={`https://www.youtube.com/watch?v=${video.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <div className="video-thumb">
+                      <img
+                        src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
+                        alt={video.title}
+                      />
+                      <span className="video-play" aria-hidden="true">
+                        ▶
+                      </span>
+                    </div>
+                    <div className="video-title">{video.title}</div>
+                  </a>
                 ))}
               </div>
             ) : null}

@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center font-sans">
+    <div className="home-photos font-sans">
       <div className="flex w-full max-w-7xl items-center justify-between gap-10 px-6">
         <img
           src="/buboy1.jpg"
