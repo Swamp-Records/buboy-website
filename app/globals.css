@@ -3,7 +3,6 @@
 :root {
   --background: #F4F1D0;
   --foreground: #171717;
-  --site-scale: 0.67;
 }
 
 @theme inline {
@@ -21,41 +20,27 @@
 }
 
 html {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-body { 
-  background-color: var(--background); 
-  background-image: url("/buboylogo.png"), url("/star.png"), url("/star.png"), url("/star.png"); 
-  background-repeat: no-repeat; 
+body {
+  background-color: var(--background);
+  background-image: url("/buboylogo.png"), url("/star.png"), url("/star.png"), url("/star.png");
+  background-repeat: no-repeat;
   background-position: 50% 0px, 5% 25%, 50% 25%, 95% 25%;
-  background-size: clamp(240px, 30vw, 360px) auto,
-    35vw auto,
-    35vw auto,
-    35vw auto;
-  color: var(--foreground); 
-  font-family: Arial, Helvetica, sans-serif; 
-  position: relative; 
-  transform: scale(var(--site-scale));
-  transform-origin: top left;
-  width: calc(100% / var(--site-scale));
-  min-height: calc(100vh / var(--site-scale));
-  overflow: hidden;
+  background-size:
+    clamp(180px, 22vw, 320px) auto,
+    clamp(180px, 28vw, 420px) auto,
+    clamp(180px, 28vw, 420px) auto,
+    clamp(180px, 28vw, 420px) auto;
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-body::after {
-  content: "Buboy is a Filipino-American indie rock artist who drinks a lot of milk and goes to the movie theater alone (separate activities, rarely together).";
-  position: fixed;
-  right: 10%;
-  top: 80%;
-  max-width: clamp(220px, 28vw, 320px);
-  font-size: clamp(13px, 1.6vw, 18px);
-  line-height: 1.4;
-  color: #111111;
-  z-index: 1;
-  pointer-events: none;
-}
-
+/* Copyright footer — fixed to viewport bottom center */
 body::before {
   content: "© 2026 buboy / swamp records";
   position: fixed;
@@ -67,6 +52,21 @@ body::before {
   color: #111111;
   pointer-events: none;
   z-index: 1;
+  white-space: nowrap;
+}
+
+/* Bio blurb — fixed to bottom-right area */
+body::after {
+  content: "Buboy is a Filipino-American indie rock artist who drinks a lot of milk and goes to the movie theater alone (separate activities, rarely together).";
+  position: fixed;
+  right: clamp(16px, 4vw, 48px);
+  bottom: clamp(48px, 8vh, 96px);
+  max-width: clamp(180px, 22vw, 300px);
+  font-size: clamp(12px, 1.3vw, 16px);
+  line-height: 1.4;
+  color: #111111;
+  z-index: 1;
+  pointer-events: none;
 }
 
 body > * {
@@ -74,8 +74,10 @@ body > * {
   z-index: 1;
 }
 
+/* ── Home photos ─────────────────────────────────────────── */
+
 .home-photos {
-  min-height: calc(100vh / var(--site-scale));
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,10 +93,12 @@ body > * {
 }
 
 .home-photo {
-  width: 25vw;
+  width: clamp(160px, 22vw, 340px);
   height: auto;
   object-fit: contain;
 }
+
+/* ── Desktop dock & windows ──────────────────────────────── */
 
 .desktop-dock {
   position: fixed;
@@ -133,8 +137,8 @@ body > * {
 .app-window {
   position: fixed;
   z-index: 3;
-  width: min(1860px, 95vw);
-  height: min(1200px, 95vh);
+  width: min(1200px, 90vw);
+  height: min(800px, 88vh);
 }
 
 .app-window.is-dragging .desktop-titlebar {
@@ -144,6 +148,8 @@ body > * {
 .app-window-content {
   height: calc(100% - 54px);
 }
+
+/* ── Gallery ─────────────────────────────────────────────── */
 
 .gallery-grid {
   display: grid;
@@ -155,14 +161,14 @@ body > * {
 }
 
 .gallery-tile {
-  width: clamp(164px, 19.97vw, 290px);
+  width: 100%;
   display: grid;
   gap: clamp(4px, 0.91vw, 8px);
 }
 
 .gallery-image {
-  width: clamp(164px, 19.97vw, 290px);
-  height: clamp(173px, 21.78vw, 305px);
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
   border: 2px solid #d4d0c4;
   background: #ffffff;
   overflow: hidden;
@@ -176,8 +182,9 @@ body > * {
   color: #111111;
 }
 
+/* ── Video grid ──────────────────────────────────────────── */
+
 .video-grid {
-  --video-card-width: clamp(280px, 32vw, 420px);
   display: flex;
   flex-wrap: wrap;
   gap: clamp(16px, 2.6vw, 24px);
@@ -188,7 +195,7 @@ body > * {
 .video-card {
   display: grid;
   gap: 8px;
-  width: var(--video-card-width);
+  width: clamp(240px, 30vw, 400px);
   text-decoration: none;
   color: inherit;
 }
@@ -229,6 +236,8 @@ body > * {
   flex-direction: column;
   justify-content: center;
 }
+
+/* ── Window chrome ───────────────────────────────────────── */
 
 .window-title-row {
   padding: clamp(8px, 1.3vw, 10px) clamp(12px, 1.8vw, 16px) 0;
@@ -282,10 +291,11 @@ body > * {
 }
 
 .window-content {
-  padding: clamp(12px, 2vw, 16px) clamp(18px, 3vw, 32px)
-    clamp(18px, 3vw, 32px);
+  padding: clamp(12px, 2vw, 16px) clamp(18px, 3vw, 32px) clamp(18px, 3vw, 32px);
   background: #fdfdf7;
 }
+
+/* ── Nav grid ────────────────────────────────────────────── */
 
 .nav-grid {
   display: grid;
@@ -300,7 +310,7 @@ body > * {
   gap: 0px;
   color: #141414;
   text-decoration: none;
-  font-size: clamp(14px, 2.1vw, 22px);
+  font-size: clamp(13px, 1.8vw, 20px);
   line-height: 1.1;
   text-transform: lowercase;
 }
@@ -320,13 +330,15 @@ body > * {
 }
 
 .folder-icon {
-  width: clamp(80px, 11vw, 130px);
-  height: clamp(64px, 9vw, 104px);
+  width: clamp(64px, 9vw, 120px);
+  height: clamp(52px, 7.2vw, 96px);
   background-image: url("/minifile.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
 }
+
+/* ── Press kit ───────────────────────────────────────────── */
 
 .press-kit {
   min-height: 100vh;
@@ -410,7 +422,7 @@ body > * {
 
 .press-kit-coverage {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 22vw, 240px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(clamp(160px, 20vw, 240px), 1fr));
   gap: clamp(16px, 2.6vw, 24px);
 }
 
@@ -424,7 +436,7 @@ body > * {
 
 .press-kit-card-image {
   background: linear-gradient(135deg, #d3d3d3, #f0f0f0);
-  height: clamp(130px, 18vw, 160px);
+  height: clamp(120px, 16vw, 160px);
 }
 
 .press-kit-card-body {
@@ -468,6 +480,8 @@ body > * {
   text-decoration: underline;
 }
 
+/* ── Responsive breakpoints ──────────────────────────────── */
+
 @media (max-width: 900px) {
   .press-kit-grid {
     grid-template-columns: 1fr;
@@ -480,11 +494,17 @@ body > * {
   .press-kit-contact {
     text-align: left;
   }
-}
 
-@media (max-width: 900px) {
   .nav-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body::after {
+    display: none;
   }
 }
 
@@ -500,5 +520,18 @@ body > * {
 
   .nav-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .video-card {
+    width: clamp(240px, 80vw, 400px);
+  }
+
+  .app-window {
+    width: 96vw;
+    height: 90vh;
   }
 }
