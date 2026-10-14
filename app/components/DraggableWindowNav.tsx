@@ -38,6 +38,10 @@ export default function DraggableWindowNav() {
   const [position, setPosition] = useState({ x: 24, y: 24 });
   const [dragging, setDragging] = useState(false);
   const [openWindows, setOpenWindows] = useState<string[]>([]);
+  const [isDockMinimized, setIsDockMinimized] = useState(false);
+  const [isDockMaximized, setIsDockMaximized] = useState(false);
+  const [minimizedWindowIds, setMinimizedWindowIds] = useState<string[]>([]);
+  const [maximizedWindowIds, setMaximizedWindowIds] = useState<string[]>([]);
   const [windowPositions, setWindowPositions] = useState<
     Record<string, { x: number; y: number }>
   >({});
@@ -233,6 +237,10 @@ export default function DraggableWindowNav() {
       return;
     }
 
+    if (isDockMaximized) {
+      return;
+    }
+
     event.preventDefault();
     const scale = getScale();
     dragRef.current.isDragging = true;
@@ -276,6 +284,10 @@ export default function DraggableWindowNav() {
       return;
     }
 
+    if (maximizedWindowIds.includes(id)) {
+      return;
+    }
+
     event.preventDefault();
     event.stopPropagation();
     const position = windowPositions[id] ?? { x: 0, y: 0 };
@@ -303,23 +315,67 @@ export default function DraggableWindowNav() {
     setOpenWindows((current) =>
       current.includes(id) ? current : [...current, id]
     );
+    setMinimizedWindowIds((current) =>
+      current.filter((entry) => entry !== id)
+    );
   };
 
   const closeWindow = (id: string) => {
     setOpenWindows((current) => current.filter((entry) => entry !== id));
+    setMinimizedWindowIds((current) =>
+      current.filter((entry) => entry !== id)
+    );
+    setMaximizedWindowIds((current) =>
+      current.filter((entry) => entry !== id)
+    );
     setWindowPositions((current) => {
-      const { [id]: _, ...rest } = current;
-      return rest;
+      const next = { ...current };
+      delete next[id];
+      return next;
     });
+  };
+
+  const toggleWindowMinimized = (id: string) => {
+    setMinimizedWindowIds((current) =>
+      current.includes(id)
+        ? current.filter((entry) => entry !== id)
+        : [...current, id]
+    );
+  };
+
+  const toggleDockMaximized = () => {
+    setIsDockMinimized(false);
+    setIsDockMaximized((current) => !current);
+  };
+
+  const toggleWindowMaximized = (id: string) => {
+    setMinimizedWindowIds((current) =>
+      current.filter((entry) => entry !== id)
+    );
+    setMaximizedWindowIds((current) =>
+      current.includes(id)
+        ? current.filter((entry) => entry !== id)
+        : [...current, id]
+    );
   };
 
   return (
     <div
       ref={dockRef}
-      className={`desktop-dock${dragging ? " is-dragging" : ""}`}
-      style={{ left: position.x, top: position.y }}
+      className={`desktop-dock${dragging ? " is-dragging" : ""}${
+        isDockMaximized ? " is-maximized" : ""
+      }`}
+      style={
+        isDockMaximized
+          ? { left: 8, top: 8 }
+          : { left: position.x, top: position.y }
+      }
     >
-      <div className="desktop-window">
+      <div
+        className={`desktop-window${isDockMinimized ? " is-minimized" : ""}${
+          isDockMaximized ? " is-maximized" : ""
+        }`}
+      >
         <div
           className="desktop-titlebar"
           onPointerDown={handlePointerDown}
@@ -328,110 +384,180 @@ export default function DraggableWindowNav() {
           onPointerCancel={handlePointerUp}
           aria-label="Drag window"
         >
-          <div className="window-controls" aria-hidden="true">
-            <span className="control control-min">-</span>
-            <span className="control control-max">+</span>
-          </div>
-        </div>
-        <div className="window-content">
-          <nav className="nav-grid" aria-label="Primary">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="nav-item nav-button"
-                onClick={() => openWindow(item.id)}
-              >
-                <span className="folder-icon" aria-hidden="true" />
-                <span className="nav-label">{item.label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-      {openWindows.map((id) => (
-        <div
-          key={id}
-          ref={(node) => {
-            windowRefs.current[id] = node;
-          }}
-          className={`desktop-window app-window${
-            draggingWindowId === id ? " is-dragging" : ""
-          }`}
-          style={{
-            left: windowPositions[id]?.x ?? 120,
-            top: windowPositions[id]?.y ?? 120,
-          }}
-        >
-          <div
-            className="desktop-titlebar"
-            onPointerDown={(event) => handleWindowPointerDown(id, event)}
-            onPointerUp={handleWindowPointerUp}
-            onPointerCancel={handleWindowPointerUp}
-            aria-label={`Drag ${id} window`}
-          >
-            <div className="window-controls" aria-hidden="true">
-              <span className="control control-min">-</span>
-              <span className="control control-max">+</span>
-            </div>
+          <div className="window-controls">
             <button
               type="button"
-              className="window-close"
+              className="control control-min"
               onPointerDown={(event) => event.stopPropagation()}
               onPointerUp={(event) => event.stopPropagation()}
-              onClick={() => closeWindow(id)}
-              aria-label={`Close ${id} window`}
+              onClick={() => setIsDockMinimized((current) => !current)}
+              aria-label={
+                isDockMinimized ? "Restore navigation" : "Minimize navigation"
+              }
             >
-              x
+              -
+            </button>
+            <button
+              type="button"
+              className="control control-max"
+              onPointerDown={(event) => event.stopPropagation()}
+              onPointerUp={(event) => event.stopPropagation()}
+              onClick={toggleDockMaximized}
+              aria-label={
+                isDockMaximized ? "Restore navigation" : "Maximize navigation"
+              }
+            >
+              +
             </button>
           </div>
-          <div className="window-title-row">[ {id} ]</div>
+        </div>
+        {!isDockMinimized ? (
+          <div className="window-content">
+            <nav className="nav-grid" aria-label="Primary">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="nav-item nav-button"
+                  onClick={() => openWindow(item.id)}
+                >
+                  <span className="folder-icon" aria-hidden="true" />
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        ) : null}
+      </div>
+      {openWindows.map((id) => {
+        const isWindowMinimized = minimizedWindowIds.includes(id);
+        const isWindowMaximized = maximizedWindowIds.includes(id);
+
+        return (
           <div
-            className={`window-content app-window-content${
-              id === "video" ? " video-window-content" : ""
+            key={id}
+            ref={(node) => {
+              windowRefs.current[id] = node;
+            }}
+            className={`desktop-window app-window${
+              draggingWindowId === id ? " is-dragging" : ""
+            }${isWindowMinimized ? " is-minimized" : ""}${
+              isWindowMaximized ? " is-maximized" : ""
             }`}
+            style={
+              isWindowMaximized
+                ? { left: 8, top: 8 }
+                : {
+                    left: windowPositions[id]?.x ?? 120,
+                    top: windowPositions[id]?.y ?? 120,
+                  }
+            }
           >
-            {id === "gallery" ? (
-              <div className="gallery-grid">
-                {galleryImages.map((src, index) => (
-                  <div key={src} className="gallery-tile">
-                    <img
-                      src={src}
-                      alt={`Gallery photo ${index + 1}`}
-                      className="gallery-image"
-                    />
-                    <div className="gallery-caption">photo by: photo taker</div>
-                  </div>
-                ))}
+            <div
+              className="desktop-titlebar"
+              onPointerDown={(event) => handleWindowPointerDown(id, event)}
+              onPointerUp={handleWindowPointerUp}
+              onPointerCancel={handleWindowPointerUp}
+              aria-label={`Drag ${id} window`}
+            >
+              <div className="window-controls">
+                <button
+                  type="button"
+                  className="control control-min"
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onPointerUp={(event) => event.stopPropagation()}
+                  onClick={() => toggleWindowMinimized(id)}
+                  aria-label={
+                    isWindowMinimized
+                      ? `Restore ${id} window`
+                      : `Minimize ${id} window`
+                  }
+                >
+                  -
+                </button>
+                <button
+                  type="button"
+                  className="control control-max"
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onPointerUp={(event) => event.stopPropagation()}
+                  onClick={() => toggleWindowMaximized(id)}
+                  aria-label={
+                    isWindowMaximized
+                      ? `Restore ${id} window`
+                      : `Maximize ${id} window`
+                  }
+                >
+                  +
+                </button>
               </div>
-            ) : null}
-            {id === "video" ? (
-              <div className="video-grid" aria-label="Video gallery">
-                {videoItems.map((video) => (
-                  <a
-                    key={video.id}
-                    className="video-card"
-                    href={`https://www.youtube.com/watch?v=${video.id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <div className="video-thumb">
-                      <img
-                        src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
-                        alt={video.title}
-                      />
-                      <span className="video-play" aria-hidden="true">
-                        ▶
-                      </span>
+              {isWindowMinimized ? (
+                <div className="titlebar-window-title">[ {id} ]</div>
+              ) : null}
+              <button
+                type="button"
+                className="window-close"
+                onPointerDown={(event) => event.stopPropagation()}
+                onPointerUp={(event) => event.stopPropagation()}
+                onClick={() => closeWindow(id)}
+                aria-label={`Close ${id} window`}
+              >
+                x
+              </button>
+            </div>
+            {!isWindowMinimized ? (
+              <>
+                <div className="window-title-row">[ {id} ]</div>
+                <div
+                  className={`window-content app-window-content${
+                    id === "video" ? " video-window-content" : ""
+                  }`}
+                >
+                  {id === "gallery" ? (
+                    <div className="gallery-grid">
+                      {galleryImages.map((src, index) => (
+                        <div key={src} className="gallery-tile">
+                          <img
+                            src={src}
+                            alt={`Gallery photo ${index + 1}`}
+                            className="gallery-image"
+                          />
+                          <div className="gallery-caption">
+                            photo by: photo taker
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="video-title">{video.title}</div>
-                  </a>
-                ))}
-              </div>
+                  ) : null}
+                  {id === "video" ? (
+                    <div className="video-grid" aria-label="Video gallery">
+                      {videoItems.map((video) => (
+                        <a
+                          key={video.id}
+                          className="video-card"
+                          href={`https://www.youtube.com/watch?v=${video.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <div className="video-thumb">
+                            <img
+                              src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
+                              alt={video.title}
+                            />
+                            <span className="video-play" aria-hidden="true">
+                              ▶
+                            </span>
+                          </div>
+                          <div className="video-title">{video.title}</div>
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </>
             ) : null}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
