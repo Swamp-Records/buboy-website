@@ -117,6 +117,15 @@ body > * {
   box-shadow: 0 18px 30px rgba(34, 34, 34, 0.25);
 }
 
+.desktop-window.is-maximized {
+  width: calc(100vw - 16px);
+  max-width: none;
+}
+
+.desktop-window.is-minimized .desktop-titlebar {
+  border-bottom: none;
+}
+
 .desktop-titlebar {
   display: flex;
   align-items: center;
@@ -139,6 +148,19 @@ body > * {
   z-index: 3;
   width: min(1200px, 90vw);
   height: min(800px, 88vh);
+}
+
+.app-window.is-maximized {
+  width: calc(100vw - 16px);
+  max-width: none;
+}
+
+.app-window.is-maximized:not(.is-minimized) {
+  height: calc(100vh - 16px);
+}
+
+.app-window.is-minimized {
+  height: auto;
 }
 
 .app-window.is-dragging .desktop-titlebar {
@@ -248,6 +270,23 @@ body > * {
   letter-spacing: 0.08em;
 }
 
+.titlebar-window-title {
+  flex: 1;
+  min-width: 0;
+  margin-right: clamp(40px, 5vw, 56px);
+  overflow: hidden;
+  color: #000000;
+  font-size: clamp(14px, 1.7vw, 18px);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  opacity: 1;
+  pointer-events: none;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
 .window-close {
   position: absolute;
   right: 12px;
@@ -273,14 +312,22 @@ body > * {
 }
 
 .window-controls .control {
+  appearance: none;
   display: grid;
   place-items: center;
   width: clamp(18px, 2.8vw, 24px);
   height: clamp(18px, 2.8vw, 24px);
+  padding: 0;
   border: 2px solid #1d1d1d;
   border-radius: 4px;
   background: #fafaf4;
+  color: inherit;
+  font: inherit;
   line-height: 1;
+}
+
+button.control {
+  cursor: pointer;
 }
 
 .title-text {
