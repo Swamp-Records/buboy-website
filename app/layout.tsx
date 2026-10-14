@@ -28,8 +28,28 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <DraggableWindowNav />
-        {children}
+        <div className="page-shell">
+          <img
+            src="/star.png"
+            alt=""
+            aria-hidden="true"
+            className="star-image star-image-left"
+          />
+          <img
+            src="/star.png"
+            alt=""
+            aria-hidden="true"
+            className="star-image star-image-center"
+          />
+          <img
+            src="/star.png"
+            alt=""
+            aria-hidden="true"
+            className="star-image star-image-right"
+          />
+          <DraggableWindowNav />
+          {children}
+        </div>
       </body>
     </html>
   );

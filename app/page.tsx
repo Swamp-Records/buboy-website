@@ -1,6 +1,16 @@
+
 export default function Home() {
   return (
     <div className="home-photos font-sans">
+      <a
+        href="YOUR-LINK-HERE"
+        className="chew-out-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        chew out now!
+      </a>
+
       <div className="home-photos-row">
         <img
           src="/buboy1.jpg"
@@ -18,6 +28,12 @@ export default function Home() {
           className="home-photo"
         />
       </div>
+
+      <p className="bio-blurb">
+        Buboy is a Filipino-American indie rock artist who drinks a lot of milk
+        and goes to the movie theater alone (separate activities, rarely
+        together).
+      </p>
     </div>
   );
 }
