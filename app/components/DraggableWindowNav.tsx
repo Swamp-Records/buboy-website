@@ -37,6 +37,8 @@ export default function DraggableWindowNav() {
   const windowDragRef = useRef({ id: "", offsetX: 0, offsetY: 0 });
   const [position, setPosition] = useState({ x: 24, y: 24 });
   const [dragging, setDragging] = useState(false);
+  const zCounterRef = useRef(10);
+  const [windowZ, setWindowZ] = useState<Record<string, number>>({});
   const [openWindows, setOpenWindows] = useState<string[]>([]);
   const [windowPositions, setWindowPositions] = useState<
     Record<string, { x: number; y: number }>
@@ -276,6 +278,10 @@ export default function DraggableWindowNav() {
       return;
     }
 
+    bringToFront(id); //raise on titlebar pointer down
+    event.preventDefault();
+    event.stopPropagation();
+
     event.preventDefault();
     event.stopPropagation();
     const position = windowPositions[id] ?? { x: 0, y: 0 };
@@ -299,15 +305,31 @@ export default function DraggableWindowNav() {
     event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
+  const bringToFront = (id: string) => {
+    if (windowZ[id] === zCounterRef.current) {
+      return;
+    }
+
+    zCounterRef.current += 1;
+    const nextZ = zCounterRef.current;
+    setWindowZ((current) => ({ ...current, [id]: nextZ }));
+  };
+
   const openWindow = (id: string) => {
+    // Raise when opening + when already open
     setOpenWindows((current) =>
       current.includes(id) ? current : [...current, id]
     );
+    bringToFront(id);
   };
 
   const closeWindow = (id: string) => {
     setOpenWindows((current) => current.filter((entry) => entry !== id));
     setWindowPositions((current) => {
+      const { [id]: _, ...rest } = current;
+      return rest;
+    });
+    setWindowZ((current) => {
       const { [id]: _, ...rest } = current;
       return rest;
     });
@@ -361,7 +383,9 @@ export default function DraggableWindowNav() {
           style={{
             left: windowPositions[id]?.x ?? 120,
             top: windowPositions[id]?.y ?? 120,
+            zIndex: windowZ[id] ?? 10,
           }}
+          onPointerDown={() => bringToFront(id)}
         >
           <div
             className="desktop-titlebar"
