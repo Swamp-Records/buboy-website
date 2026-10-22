@@ -26,18 +26,46 @@ html {
 
 body {
   background-color: var(--background);
-  background-image: url("/buboylogo.png"), url("/star.png"), url("/star.png"), url("/star.png");
+  background-image: url("/buboylogo.png");
   background-repeat: no-repeat;
-  background-position: 50% 0px, 5% 25%, 50% 25%, 95% 25%;
-  background-size:
-    clamp(180px, 22vw, 320px) auto,
-    clamp(180px, 28vw, 420px) auto,
-    clamp(180px, 28vw, 420px) auto,
-    clamp(180px, 28vw, 420px) auto;
+  background-position: 50% 25px;
+  background-size: clamp(200px, 16vw, 380px) auto;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+.page-shell {
+  position: relative;
+  min-height: 100vh;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.star-image {
+  position: fixed;
+  top: 25%;
+  width: clamp(220px, 30%, 537.58px);
+  height: auto;
+  pointer-events: none;
+  z-index: -1;
+  transform-origin: center;
+}
+
+.star-image-left {
+  left: 8%;
+  transform: rotate(66.978deg);
+}
+
+.star-image-center {
+  left: 50%;
+  transform: translateX(-50%) rotate(66.978deg);
+}
+
+.star-image-right {
+  left: 92%;
+  transform: translateX(-100%) rotate(66.978deg);
 }
 
 /* Copyright footer — fixed to viewport bottom center */
@@ -55,18 +83,17 @@ body::before {
   white-space: nowrap;
 }
 
-/* Bio blurb — fixed to bottom-right area */
-body::after {
-  content: "Buboy is a Filipino-American indie rock artist who drinks a lot of milk and goes to the movie theater alone (separate activities, rarely together).";
-  position: fixed;
-  right: clamp(16px, 4vw, 48px);
+/* Bio blurb — anchored to bottom-right area */
+.bio-blurb {
+  position: absolute;
+  right: clamp(100px, 12vw, 200px);
   bottom: clamp(48px, 8vh, 96px);
-  max-width: clamp(180px, 22vw, 300px);
+  max-width: clamp(180px, 25vw, 400px);
+  margin: 0;
   font-size: clamp(12px, 1.3vw, 16px);
   line-height: 1.4;
   color: #111111;
   z-index: 1;
-  pointer-events: none;
 }
 
 body > * {
@@ -74,28 +101,54 @@ body > * {
   z-index: 1;
 }
 
+/* ── Chew out link ───────────────────────────────────────── */
+.chew-out-link {
+  position: absolute;
+  top: 21%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(12px, 1.5vw, 14px);
+  color: #001aff;
+  text-decoration: underline;
+  z-index: 2;
+}
+
+.chew-out-link:hover {
+  opacity: 0.7;
+}
+
 /* ── Home photos ─────────────────────────────────────────── */
 
 .home-photos {
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  padding-top: 50px;
 }
 
 .home-photos-row {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: clamp(24px, 6vw, 120px);
-  width: min(90vw, 1400px);
+  gap: clamp(0px, 100%, 45px);
+  width: 100%;
   margin: 0 auto;
 }
 
 .home-photo {
-  width: clamp(160px, 22vw, 340px);
+  display: block;
+  width: 100%;
+  max-width: 257px;
+  aspect-ratio: 237 / 320;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 /* ── Desktop dock & windows ──────────────────────────────── */
@@ -105,16 +158,25 @@ body > * {
   display: flex;
   align-items: flex-end;
   gap: 24px;
-  z-index: 2;
+  z-index: 3;
   user-select: none;
 }
 
 .desktop-window {
   width: min(920px, 92vw);
   border: 2px solid #5a5a5a;
-  border-radius: 8px;
+  border-radius: 0px;
   background: #f7f7f2;
   box-shadow: 0 18px 30px rgba(34, 34, 34, 0.25);
+}
+
+.desktop-window.is-maximized {
+  width: calc(100vw - 16px);
+  max-width: none;
+}
+
+.desktop-window.is-minimized .desktop-titlebar {
+  border-bottom: none;
 }
 
 .desktop-titlebar {
@@ -136,9 +198,22 @@ body > * {
 
 .app-window {
   position: fixed;
-  z-index: 3;
+  z-index: 4;
   width: min(1200px, 90vw);
   height: min(800px, 88vh);
+}
+
+.app-window.is-maximized {
+  width: calc(100vw - 16px);
+  max-width: none;
+}
+
+.app-window.is-maximized:not(.is-minimized) {
+  height: calc(100vh - 16px);
+}
+
+.app-window.is-minimized {
+  height: auto;
 }
 
 .app-window.is-dragging .desktop-titlebar {
@@ -242,10 +317,26 @@ body > * {
 .window-title-row {
   padding: clamp(8px, 1.3vw, 10px) clamp(12px, 1.8vw, 16px) 0;
   font-size: clamp(16px, 2.1vw, 22px);
-  text-align: center;
   color: #000000;
   text-transform: lowercase;
   letter-spacing: 0.08em;
+}
+
+.titlebar-window-title {
+  flex: 1;
+  min-width: 0;
+  margin-right: clamp(40px, 5vw, 56px);
+  overflow: hidden;
+  color: #000000;
+  font-size: clamp(14px, 1.7vw, 18px);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  opacity: 1;
+  pointer-events: none;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: lowercase;
+  white-space: nowrap;
 }
 
 .window-close {
@@ -273,14 +364,22 @@ body > * {
 }
 
 .window-controls .control {
+  appearance: none;
   display: grid;
   place-items: center;
   width: clamp(18px, 2.8vw, 24px);
   height: clamp(18px, 2.8vw, 24px);
+  padding: 0;
   border: 2px solid #1d1d1d;
   border-radius: 4px;
   background: #fafaf4;
+  color: inherit;
+  font: inherit;
   line-height: 1;
+}
+
+button.control {
+  cursor: pointer;
 }
 
 .title-text {
@@ -482,7 +581,7 @@ body > * {
 
 /* ── Responsive breakpoints ──────────────────────────────── */
 
-@media (max-width: 900px) {
+@media (max-width: 640px) {
   .press-kit-grid {
     grid-template-columns: 1fr;
   }
@@ -503,11 +602,12 @@ body > * {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  body::after {
-    display: none;
+  .home-photo {
+    width: min(257px, 28vw);
   }
 }
 
+/* Mobile */
 @media (max-width: 640px) {
   .desktop-window {
     width: min(520px, 92vw);
