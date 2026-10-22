@@ -37,6 +37,8 @@ export default function DraggableWindowNav() {
   const windowDragRef = useRef({ id: "", offsetX: 0, offsetY: 0 });
   const [position, setPosition] = useState({ x: 24, y: 24 });
   const [dragging, setDragging] = useState(false);
+  const zCounterRef = useRef(10);
+  const [windowZ, setWindowZ] = useState<Record<string, number>>({});
   const [openWindows, setOpenWindows] = useState<string[]>([]);
   const [isDockMinimized, setIsDockMinimized] = useState(false);
   const [isDockMaximized, setIsDockMaximized] = useState(false);
@@ -284,6 +286,9 @@ export default function DraggableWindowNav() {
       return;
     }
 
+    bringToFront(id); //raise on titlebar pointer down
+    event.preventDefault();
+    event.stopPropagation();
     if (maximizedWindowIds.includes(id)) {
       return;
     }
@@ -311,10 +316,22 @@ export default function DraggableWindowNav() {
     event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
+  const bringToFront = (id: string) => {
+    if (windowZ[id] === zCounterRef.current) {
+      return;
+    }
+
+    zCounterRef.current += 1;
+    const nextZ = zCounterRef.current;
+    setWindowZ((current) => ({ ...current, [id]: nextZ }));
+  };
+
   const openWindow = (id: string) => {
+    // Raise when opening + when already open
     setOpenWindows((current) =>
       current.includes(id) ? current : [...current, id]
     );
+    bringToFront(id);
     setMinimizedWindowIds((current) =>
       current.filter((entry) => entry !== id)
     );
@@ -332,6 +349,10 @@ export default function DraggableWindowNav() {
       const next = { ...current };
       delete next[id];
       return next;
+    });
+    setWindowZ((current) => {
+      const { [id]: _, ...rest } = current;
+      return rest;
     });
   };
 
@@ -384,6 +405,54 @@ export default function DraggableWindowNav() {
           onPointerCancel={handlePointerUp}
           aria-label="Drag window"
         >
+          <div className="window-controls" aria-hidden="true">
+            <span className="control control-min">-</span>
+            <span className="control control-max">+</span>
+          </div>
+        </div>
+        <div className="window-content">
+          <nav className="nav-grid" aria-label="Primary">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className="nav-item nav-button"
+                onClick={() => openWindow(item.id)}
+              >
+                <span className="folder-icon" aria-hidden="true" />
+                <span className="nav-label">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+      {openWindows.map((id) => (
+        <div
+          key={id}
+          ref={(node) => {
+            windowRefs.current[id] = node;
+          }}
+          className={`desktop-window app-window${
+            draggingWindowId === id ? " is-dragging" : ""
+          }`}
+          style={{
+            left: windowPositions[id]?.x ?? 120,
+            top: windowPositions[id]?.y ?? 120,
+            zIndex: windowZ[id] ?? 10,
+          }}
+          onPointerDown={() => bringToFront(id)}
+        >
+          <div
+            className="desktop-titlebar"
+            onPointerDown={(event) => handleWindowPointerDown(id, event)}
+            onPointerUp={handleWindowPointerUp}
+            onPointerCancel={handleWindowPointerUp}
+            aria-label={`Drag ${id} window`}
+          >
+            <div className="window-controls" aria-hidden="true">
+              <span className="control control-min">-</span>
+              <span className="control control-max">+</span>
+            </div>
           <div className="window-controls">
             <button
               type="button"
