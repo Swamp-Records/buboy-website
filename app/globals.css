@@ -163,11 +163,11 @@ body > * {
 }
 
 .desktop-window {
+  box-sizing: border-box;
   width: min(920px, 92vw);
   border: 2px solid #5a5a5a;
   border-radius: 0px;
-  background: #f7f7f2;
-  box-shadow: 0 18px 30px rgba(34, 34, 34, 0.25);
+  background: #fafaf4;
 }
 
 .desktop-window.is-maximized {
@@ -181,12 +181,13 @@ body > * {
 
 .desktop-titlebar {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: clamp(8px, 1.3vw, 10px) clamp(12px, 1.8vw, 16px);
   border-bottom: 2px solid #5a5a5a;
-  background: linear-gradient(180deg, #fefefe 0%, #e6e6e1 100%);
+  background: #fafaf4;
   cursor: grab;
   touch-action: none;
   position: relative;
@@ -198,9 +199,12 @@ body > * {
 
 .app-window {
   position: fixed;
+  display: flex;
+  flex-direction: column;
   z-index: 4;
   width: min(1200px, 90vw);
   height: min(800px, 88vh);
+  box-sizing: border-box;
 }
 
 .app-window.is-maximized {
@@ -221,7 +225,9 @@ body > * {
 }
 
 .app-window-content {
-  height: calc(100% - 54px);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 /* ── Gallery ─────────────────────────────────────────────── */
@@ -315,9 +321,11 @@ body > * {
 /* ── Window chrome ───────────────────────────────────────── */
 
 .window-title-row {
+  flex-shrink: 0;
   padding: clamp(8px, 1.3vw, 10px) clamp(12px, 1.8vw, 16px) 0;
   font-size: clamp(16px, 2.1vw, 22px);
   color: #000000;
+  text-align: center;
   text-transform: lowercase;
   letter-spacing: 0.08em;
 }
@@ -391,7 +399,7 @@ button.control {
 
 .window-content {
   padding: clamp(12px, 2vw, 16px) clamp(18px, 3vw, 32px) clamp(18px, 3vw, 32px);
-  background: #fdfdf7;
+  background: #fafaf4;
 }
 
 /* ── Nav grid ────────────────────────────────────────────── */
@@ -439,9 +447,11 @@ button.control {
 
 /* ── Press kit ───────────────────────────────────────────── */
 
+.press-kit-content {
+  font-color: black;
+}
+
 .press-kit {
-  min-height: 100vh;
-  padding: clamp(24px, 4vw, 48px);
   display: flex;
   justify-content: center;
   font-family: Arial, Helvetica, sans-serif;
@@ -449,7 +459,7 @@ button.control {
 
 .press-kit-inner {
   width: min(1200px, 95vw);
-  background: #fdfcf4;
+  background: black;
   border: 2px solid #1d1d1d;
   box-shadow: 0 18px 30px rgba(34, 34, 34, 0.12);
   padding: clamp(20px, 3vw, 32px);
