@@ -1,7 +1,5 @@
-import styles from "./PressKitWindow.module.css";
+import styles from "./styles/PressKitWindow.module.css";
 
-// Replace the "#" hrefs with your real links, and drop the matching
-// image files into /public/press-kit/ (see the paths below).
 const streamingLinks = [
   { name: "SoundCloud", href: "https://soundcloud.com/user-271627521", icon: "/press-kit/icons/soundcloud.png" },
   { name: "YouTube", href: "https://music.youtube.com/channel/UCVqaPh-3DHCl0QUV7_oA9vg", icon: "/press-kit/icons/youtube.png" },
@@ -14,24 +12,32 @@ const streamingLinks = [
 
 const pressCoverage = [
   {
-    image: "/press-kit/coverage-01.png",
-    title: "WMNF SOTD Darling by Buboy [premiere]",
-    href: "#",
+    url: "https://demomagazine.ca/2026/02/06/saturation-red/",
+    image: "/press-kit/Demo.png",
+    title: "SATURATION: RED"
   },
   {
-    image: "/press-kit/coverage-02.png",
-    title: "Wasted Fridays feature",
-    href: "#",
+    url: "https://atwoodmagazine.com/wr-roundup-2025-02-05/",
+    image: "/press-kit/atwoode.png",
+    title: "Atwood Magazine’s Weekly Roundup: February 5, 2025"
   },
   {
-    image: "/press-kit/coverage-03.png",
-    title: "Spotify monthly listeners feature",
-    href: "#",
+    url: "https://offtherecordpress.com/interviews/2025/11/13/buboy-hits-the-big-leagues-on-a-sold-out-nyc-debut-a-shifting-sound-and-the-power-of-poc-representation-in-indie-music",
+    image: "/press-kit/offtherecord.png",
+    title: "Buboy Hits the Big Leagues: On a Sold-Out NYC Debut,..."
   },
+  {
+    url: "https://www.gainesville.com/videos/news/2026/04/13/view-of-buboys-performance-at-big-culture-arts-festival-gainesville/89593977007/",
+    image: "/press-kit/gainesvillesun.png",
+    title: "Stage view of Buboy's performance at Big: Culture & Arts Festival"
+  }
 ];
 
 const contactEmail = "mgmt@buboymusic.com";
 
+const description = "“Wearing sneakers is boyish. Froot Loops are kind of boyish.” Small, nostalgic mementos piece together the world of Buboy, the 21-year-old artist who has vitalized the Florida music scene with his restless presence, glimmering guitars, and daydreamy storytelling. The young singer-songwriter and producer blends bedroom indie rock with sharp lyrical instinct, refreshed by the unique perspective of a minority outcast born in the American South. Building a buzzy live reputation playing with his tightknit band of high school friends, Buboy has gone coast to coast ​​joining bills and festival lineups alongside the likes of beabadoobee, Roar and flipturn. From headlining in LA to sold out nights in New York City, Buboy is making a name for himself as one of Florida’s most exciting emerging voices."
+
+// Press Kit Window Component
 export default function PressKitWindow() {
   return (
     <div className={styles.root}>
@@ -41,6 +47,10 @@ export default function PressKitWindow() {
           alt="Buboy logo"
           className={styles.logo}
         />
+
+        <section>
+          <p className={styles.description}>{description}</p>
+        </section>
 
         <section>
           <h3 className={styles.heading}>[ streaming platforms ]</h3>
@@ -65,23 +75,32 @@ export default function PressKitWindow() {
           <h3 className={styles.heading}>[ press coverage ]</h3>
           <ul className={styles.coverage}>
             {pressCoverage.map((item) => (
-              <li key={item.image}>
+              <li key={item.url} className={styles.coverageTile}>
                 <a
-                  href={item.href}
+                  href={item.url}
                   target="_blank"
-                  rel="noreferrer"
-                  className={styles.coverageCard}
+                  rel="noopener noreferrer"
+                  className={styles.coverageLink}
                 >
                   <img
                     src={item.image}
-                    alt={item.title}
+                    alt="Press coverage"
                     className={styles.coverageImage}
                   />
-                  <span className={styles.coverageTitle}>{item.title}</span>
                 </a>
+                <p className={styles.coverageTitle}>{item.title}</p>
               </li>
             ))}
           </ul>
+          <iframe 
+            data-testid="embed-iframe" 
+            style={{borderRadius: "12px", marginTop: "20px"}}
+            src="https://open.spotify.com/embed/episode/6y2lhfqLkDaeC5pUQqnlDD?utm_source=generator&theme=0&si=a8902febadb64f89" 
+            width="70%" 
+            height="100" 
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+            loading="lazy"
+          ></iframe>
         </section>
       </div>
 

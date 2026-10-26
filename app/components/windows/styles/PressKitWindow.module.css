@@ -3,8 +3,6 @@
   grid-template-columns: minmax(0, 1fr) 190px;
   gap: 32px;
   padding: 24px 28px 28px;
-  max-height: 70vh;
-  overflow: auto;
 }
 
 .main {
@@ -12,6 +10,11 @@
   flex-direction: column;
   gap: 28px;
   min-width: 0;
+}
+
+.description {
+    font-size: 0.9rem;
+    color: black;
 }
 
 .logo {
@@ -23,8 +26,8 @@
 
 .heading {
   margin: 0 0 12px;
-  font-size: 0.8rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: bold;
   color: black;
 }
 
@@ -115,5 +118,45 @@
   .side {
     order: -1;
     max-width: 220px;
+  }
+
+  /* ── Press coverage ──────────────────────────────────────── */
+
+  /* ── Press coverage ──────────────────────────────────────── */
+  .coverage {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: clamp(18px, 3vw, 36px);
+    row-gap: clamp(18px, 3vw, 36px);
+    justify-items: center;
+    align-content: start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .coverageTile {
+    width: 100%;
+    min-width: 0;
+    display: grid;
+    gap: clamp(4px, 0.91vw, 8px);
+    align-content: start;
+  }
+
+  .coverageLink {
+    display: block;
+    width: 100%;
+  }
+
+  .coverageImage {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1.05;
+    object-fit: cover;
+    object-position: center;
+    box-sizing: border-box;
+    border: 2px solid #d4d0c4;
+    background: #ffffff;
   }
 }

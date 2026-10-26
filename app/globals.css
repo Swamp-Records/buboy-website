@@ -151,6 +151,15 @@ body > * {
   min-width: 0;
 }
 
+.music-gif {
+  position: absolute;
+  left: clamp(50px, 12vw, 100px);
+  bottom: clamp(30px, 8vh, 30px);
+  max-width: clamp(180px, 25vw, 400px);
+  margin: 0;
+  z-index: 1;
+}
+
 /* ── Desktop dock & windows ──────────────────────────────── */
 
 .desktop-dock {
@@ -333,6 +342,7 @@ body > * {
 .titlebar-window-title {
   flex: 1;
   min-width: 0;
+  margin-top: 10px;
   margin-right: clamp(40px, 5vw, 56px);
   overflow: hidden;
   color: #000000;
@@ -448,7 +458,7 @@ button.control {
 /* ── Press kit ───────────────────────────────────────────── */
 
 .press-kit-content {
-  font-color: black;
+  font: black;
 }
 
 .press-kit {
