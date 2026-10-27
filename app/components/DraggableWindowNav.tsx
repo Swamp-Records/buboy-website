@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { windowContent } from "./windows";
 
 const navItems = [
   { id: "gallery", label: "gallery" },
@@ -9,25 +10,6 @@ const navItems = [
   { id: "video", label: "video" },
   { id: "tickets", label: "tickets" },
   { id: "blog", label: "blog!" },
-];
-
-const galleryImages = [
-  "/gallery/01.png",
-  "/gallery/02.png",
-  "/gallery/03.png",
-  "/gallery/04.jpg",
-  "/gallery/05.png",
-  "/gallery/06.png",
-  "/gallery/07.png",
-  "/gallery/08.png",
-];
-
-const videoItems = [
-  { id: "pGNpv_9DWAE", title: "Buboy - Chew (Official Lyric Video)" },
-  { id: "qM9MkEQw8xc", title: "Buboy - Movie Star (Official Music Video)" },
-  { id: "HjW16Yq34is", title: "Buboy - Too Late (Official Music Video)" },
-  { id: "WU9xOrcP_Vw", title: "Buboy - Wasted Fridays (Official Music Video)" },
-  { id: "M_zxEUAUHgQ", title: "Buboy - Cherry Tree (Official Video)" },
 ];
 
 export default function DraggableWindowNav() {
@@ -432,6 +414,7 @@ export default function DraggableWindowNav() {
       {openWindows.map((id) => {
         const isWindowMinimized = minimizedWindowIds.includes(id);
         const isWindowMaximized = maximizedWindowIds.includes(id);
+        const Content = windowContent[id];
 
         return (
           <div
@@ -512,46 +495,7 @@ export default function DraggableWindowNav() {
                     id === "video" ? " video-window-content" : ""
                   }`}
                 >
-                  {id === "gallery" ? (
-                    <div className="gallery-grid">
-                      {galleryImages.map((src, index) => (
-                        <div key={src} className="gallery-tile">
-                          <img
-                            src={src}
-                            alt={`Gallery photo ${index + 1}`}
-                            className="gallery-image"
-                          />
-                          <div className="gallery-caption">
-                            photo by: photo taker
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : null}
-                  {id === "video" ? (
-                    <div className="video-grid" aria-label="Video gallery">
-                      {videoItems.map((video) => (
-                        <a
-                          key={video.id}
-                          className="video-card"
-                          href={`https://www.youtube.com/watch?v=${video.id}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <div className="video-thumb">
-                            <img
-                              src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
-                              alt={video.title}
-                            />
-                            <span className="video-play" aria-hidden="true">
-                              ▶
-                            </span>
-                          </div>
-                          <div className="video-title">{video.title}</div>
-                        </a>
-                      ))}
-                    </div>
-                  ) : null}
+                  {Content ? <Content /> : null}
                 </div>
               </>
             ) : null}

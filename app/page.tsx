@@ -3,7 +3,7 @@ export default function Home() {
   return (
     <div className="home-photos font-sans">
       <a
-        href="YOUR-LINK-HERE"
+        href="https://linktr.ee/buboymusic"
         className="chew-out-link"
         target="_blank"
         rel="noopener noreferrer"
@@ -34,6 +34,7 @@ export default function Home() {
         and goes to the movie theater alone (separate activities, rarely
         together).
       </p>
+      <img src="music.gif" alt="Music gif" className="music-gif"/>
     </div>
   );
 }
