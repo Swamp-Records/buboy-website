@@ -151,7 +151,7 @@ export default function DraggableWindowNav() {
     const scale = getScale();
     const viewportWidth = window.innerWidth / scale;
     const viewportHeight = window.innerHeight / scale;
-    const centeredX = (viewportWidth - width) / 2;
+    const centeredX = 24;
     const bottomY = viewportHeight - height - 90;
     setPosition(clampToViewport(centeredX, bottomY));
 
@@ -179,7 +179,7 @@ export default function DraggableWindowNav() {
       const scale = getScale();
       const viewportWidth = window.innerWidth / scale;
       const viewportHeight = window.innerHeight / scale;
-      const centeredX = (viewportWidth - width) / 2;
+      const centeredX = 450;
       const bottomY = viewportHeight - height - 70;
       setPosition(clampToViewport(centeredX, bottomY));
     });
