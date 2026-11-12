@@ -86,9 +86,9 @@ body::before {
 /* Bio blurb — anchored to bottom-right area */
 .bio-blurb {
   position: absolute;
-  right: clamp(100px, 12vw, 200px);
+  right: clamp(24px, 3vw, 60px);
   bottom: clamp(48px, 8vh, 96px);
-  max-width: clamp(180px, 25vw, 400px);
+  max-width: clamp(180px, 22vw, 360px);
   margin: 0;
   font-size: clamp(12px, 1.3vw, 16px);
   line-height: 1.4;
@@ -104,7 +104,7 @@ body > * {
 /* ── Chew out link ───────────────────────────────────────── */
 .chew-out-link {
   position: absolute;
-  top: 21%;
+  top: calc(35px + clamp(200px, 16vw, 380px) * 0.57);
   left: 50%;
   transform: translateX(-50%);
   font-size: clamp(12px, 1.5vw, 14px);
@@ -153,7 +153,7 @@ body > * {
 
 .music-gif {
   position: absolute;
-  left: clamp(50px, 12vw, 100px);
+  left: clamp(10px, 12vw, 40px);
   bottom: clamp(30px, 8vh, 30px);
   max-width: clamp(180px, 25vw, 400px);
   margin: 0;
@@ -164,6 +164,10 @@ body > * {
 
 .desktop-dock {
   position: fixed;
+  left: clamp(20px, 15vw, 250px);
+  right: auto;
+  width: fit-content;
+  bottom: clamp(40px, 7vh, 90px);
   display: flex;
   align-items: flex-end;
   gap: 24px;
@@ -173,10 +177,11 @@ body > * {
 
 .desktop-window {
   box-sizing: border-box;
-  width: min(920px, 92vw);
+  width: min(800px, 80vw, 40vw);
   border: 2px solid #5a5a5a;
   border-radius: 0px;
-  background: #fafaf4;
+  background: #f7f7f2;
+  box-shadow: 0 18px 30px rgba(34, 34, 34, 0.25);
 }
 
 .desktop-window.is-maximized {
@@ -473,6 +478,8 @@ button.control {
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: clamp(8px, 1.8vw, 12px) clamp(6px, 1.2vw, 8px);
   text-align: center;
+  justify-content: center;
+  justify-items: center;
 }
 
 .nav-item {
