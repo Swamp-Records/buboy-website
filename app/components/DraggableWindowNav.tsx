@@ -188,6 +188,21 @@ export default function DraggableWindowNav() {
     return () => observer.disconnect();
   }, []);
 
+    useEffect(() => {
+    const handleResize = () => {
+      setWindowPositions((current) => {
+        const next: Record<string, { x: number; y: number }> = {};
+        Object.entries(current).forEach(([id, pos]) => {
+          next[id] = clampWindowToViewport(id, pos.x, pos.y);
+        });
+        return next;
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     if (!openWindows.length) {
       return;

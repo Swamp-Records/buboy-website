@@ -335,9 +335,12 @@ body > * {
 .video-window-content {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   overflow-y: auto;
+}
 
+.video-window-content > * {
+  flex-shrink: 0;
+  margin-block: auto;
 }
 
 .video-player-view {
