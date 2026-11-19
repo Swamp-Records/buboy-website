@@ -167,7 +167,7 @@ body > * {
   left: clamp(20px, 15vw, 250px);
   right: auto;
   width: fit-content;
-  bottom: clamp(40px, 7vh, 90px);
+  bottom: auto;
   display: flex;
   align-items: flex-end;
   gap: 24px;
