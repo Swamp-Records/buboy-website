@@ -1,0 +1,11 @@
+.shopTitleLink {
+  color: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  text-decoration: none;
+}
+
+.shopTitleLink:hover,
+.shopTitleLink:focus-visible {
+  color: #1d4ed8;
+}

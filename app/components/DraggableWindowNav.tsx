@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { windowContent } from "./windows";
+import styles from "./DraggableWindowNav.module.css";
 
 const navItems = [
   { id: "gallery", label: "gallery" },
@@ -430,6 +431,21 @@ export default function DraggableWindowNav() {
         const isWindowMinimized = minimizedWindowIds.includes(id);
         const isWindowMaximized = maximizedWindowIds.includes(id);
         const Content = windowContent[id];
+        const title = id === "shop" ? (
+          <a
+            className={styles.shopTitleLink}
+            href="https://buboy.bandcamp.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            onPointerDown={(event) => event.stopPropagation()}
+            onPointerUp={(event) => event.stopPropagation()}
+            aria-label="Shop on Bandcamp (opens in a new tab)"
+          >
+            [ {id} ]
+          </a>
+        ) : (
+          `[ ${id} ]`
+        );
 
         return (
           <div
@@ -489,7 +505,7 @@ export default function DraggableWindowNav() {
                 </button>
               </div>
               {isWindowMinimized ? (
-                <div className="titlebar-window-title">[ {id} ]</div>
+                <div className="titlebar-window-title">{title}</div>
               ) : null}
               <button
                 type="button"
@@ -504,7 +520,7 @@ export default function DraggableWindowNav() {
             </div>
             {!isWindowMinimized ? (
               <>
-                <div className="window-title-row">[ {id} ]</div>
+                <div className="window-title-row">{title}</div>
                 <div
                   className={`window-content app-window-content${
                     id === "video" ? " video-window-content" : ""

@@ -277,6 +277,60 @@ body > * {
   color: #111111;
 }
 
+/* ── Shop ────────────────────────────────────────────────── */
+
+.shop-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.shop-card {
+  display: grid;
+  max-width: 360px;
+  border: 1px solid #5a5a5a;
+  background: #fafaf4;
+  color: #171717;
+  text-decoration: none;
+}
+
+.shop-card:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: 3px;
+}
+
+.shop-card-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center 45%;
+  border-bottom: 1px solid #5a5a5a;
+}
+
+.shop-card-details {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.shop-card-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.shop-card-type {
+  color: #545454;
+}
+
+.shop-card:hover .shop-card-name,
+.shop-card:focus-visible .shop-card-name {
+  text-decoration: underline;
+}
+
 /* ── Video grid ──────────────────────────────────────────── */
 
 .video-grid {
