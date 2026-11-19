@@ -8,7 +8,7 @@ export default function Home() {
         target="_blank"
         rel="noopener noreferrer"
       >
-        chew out now!
+        stream now!
       </a>
 
       <div className="home-photos-row">
